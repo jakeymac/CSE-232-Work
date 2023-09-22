@@ -37,20 +37,36 @@ namespace custom
  * VECTOR
  * Just like the std :: vector <T> class
  ****************************************/
+template <typename T>
 class vector
 {
    friend class ::TestVector; // give unit tests access to the privates
    friend class ::TestStack;
    friend class ::TestPQueue;
    friend class ::TestHash;
+
+    
 public:
    
    // 
    // Construct 
    //
-   vector();
-   vector(size_t numElements);
-   vector(size_t numElements, const int & t);
+    vector() {
+        this->size = 0;
+        this->capacity = 5;
+        this->data = new T[this->capacity];
+    };
+    
+    vector(size_t numElements) : size(0), capacity(numElements) {
+        data = new T[capacity];
+    };
+    
+    vector(size_t numElements, const int & t) : size(numElements), capacity(numElements) {
+        data = new T[capacity];
+        for (size_t i = 0; i < numElements; ++i) {
+            data[i] = t;
+        }
+    };
    vector(const std::initializer_list<int>& l);
    vector(const vector &  rhs);
    vector(      vector && rhs);
