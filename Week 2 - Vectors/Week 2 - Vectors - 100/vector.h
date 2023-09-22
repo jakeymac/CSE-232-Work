@@ -205,9 +205,9 @@ private:
 template <typename T>
 vector <T> :: vector()
 {
-   data = new T[10];
-   numCapacity = 99;
-   numElements = 99;
+    data = nullptr;
+    numCapacity = 0;
+    numElements = 0;
 }
 
 /*****************************************
@@ -218,9 +218,14 @@ vector <T> :: vector()
 template <typename T>
 vector <T> :: vector(size_t num, const T & t) 
 {
-   data = new T[10];
-   numCapacity = 99;
-   numElements = 99;
+    data = new T[num];
+    numCapacity = num;
+    numElements = num;
+    
+    for (int i = 0; i < numElements; ++i) {
+        data[i] = t;
+    }
+
 }
 
 /*****************************************
@@ -230,9 +235,12 @@ vector <T> :: vector(size_t num, const T & t)
 template <typename T>
 vector <T> :: vector(const std::initializer_list<T> & l) 
 {
-   data = new T[10];
-   numCapacity = 99;
-   numElements = 99;
+    numCapacity = l.size();
+    numElements = l.size();
+    data = new T[numCapacity];
+    for (const T& element: l) {
+        data[numElements++] = element;
+    }
 }
 
 /*****************************************
@@ -243,9 +251,9 @@ vector <T> :: vector(const std::initializer_list<T> & l)
 template <typename T>
 vector <T> :: vector(size_t num) 
 {
-   data = new T[10];
-   numCapacity = 99;
-   numElements = 99;
+    data = new T[num];
+    numCapacity = num;
+    numElements = num;
 }
 
 /*****************************************
@@ -268,9 +276,14 @@ vector <T> :: vector (const vector & rhs)
 template <typename T>
 vector <T> :: vector (vector && rhs)
 {
-   data = new T[10];
-   numCapacity = 99;
-   numElements = 99;
+    numCapacity = rhs.size();
+    numElements = rhs.size();
+    data = rhs.data;
+    
+    rhs.data = nullptr;
+    rhs.numCapacity = 0;
+    rhs.numElements = 0;
+   
 }
 
 /*****************************************
@@ -402,15 +415,38 @@ const T & vector <T> :: back() const
  *     OUTPUT : *this
  **************************************/
 template <typename T>
-void vector <T> :: push_back (const T & t)
-{
-   
+void vector <T> :: push_back (const T & t) {
+    if (numElements >= numCapacity) {
+        numCapacity += 1;
+        T* new_data = new T[numCapacity];
+        
+        for (int i = 0; i < numElements; ++i) {
+            new_data[i] = data[i];
+        }
+        
+        delete[] data;
+        
+        data = new_data;
+    }
+    data[numElements++] = t;
 }
 
 template <typename T>
 void vector <T> ::push_back(T && t)
 {
-   
+    if (numElements >= numCapacity) {
+        numCapacity += 1;
+        T* new_data = new T[numCapacity];
+        
+        for (int i = 0; i < numElements; ++i) {
+            new_data[i] = data[i];
+        }
+        
+        delete[] data;
+        
+        data = new_data;
+    }
+    data[numElements++] = std::move(t);
    
 }
 
@@ -424,14 +460,33 @@ void vector <T> ::push_back(T && t)
 template <typename T>
 vector <T> & vector <T> :: operator = (const vector & rhs)
 {
-   
-   return *this;
+    delete[] data;
+    numCapacity = rhs.numCapacity;
+    numElements = rhs.numElements;
+    data = new T[numCapacity];
+    
+    for (size_t i = 0; i < numElements; ++i) {
+        data[i] = rhs.data[i];
+    }
+    return (*this);
 }
 template <typename T>
 vector <T>& vector <T> :: operator = (vector&& rhs)
 {
-
-   return *this;
+    
+    delete[] data;
+    numCapacity = rhs.numCapacity;
+    numElements = rhs.numElements;
+    data = new T[numCapacity];
+    
+    for (int i = 0; i < numElements; i++) {
+        data[i] = rhs.data[i];
+    }
+    rhs.data = nullptr;
+    rhs.numCapacity = 0;
+    rhs.numElements = 0;
+    
+    return (*this);
 }
 
 
