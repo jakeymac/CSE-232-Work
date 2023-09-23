@@ -135,62 +135,65 @@ namespace custom
  * This particular iterator is a bi-directional meaning
  * that ++ and -- both work.  Not all iterators are that way.
  *************************************************/
-template <typename T>
-class vector <T> ::iterator
-{
-   friend class ::TestVector; // give unit tests access to the privates
-   friend class ::TestStack;
-   friend class ::TestPQueue;
-   friend class ::TestHash;
-public:
-   // constructors, destructors, and assignment operator
-   iterator()                           { this->p = new T; }
-   iterator(T* p)                       { this->p = new T; }
-   iterator(const iterator& rhs)        { this->p = new T; }
-   iterator(size_t index, vector<T>& v) { this->p = new T; }
-   iterator& operator = (const iterator& rhs)
-   {
-      this->p = new T;
-      return *this;
-   }
+    template <typename T>
+    class vector <T>::iterator
+    {
+        friend class ::TestVector; // give unit tests access to the privates
+        friend class ::TestStack;
+        friend class ::TestPQueue;
+        friend class ::TestHash;
+    public:
+        // constructors, destructors, and assignment operator
+        iterator() : p(nullptr) {}
+        iterator(T* p) : p(p) {}
+        iterator(const iterator& rhs) : p(rhs.p) {}
+        iterator(size_t index, vector<T>& v) : p(index < v.numElements ? &v.data[index] : nullptr) {}
+        iterator& operator=(const iterator& rhs)
+        {
+            p = rhs.p;
+            return *this;
+        }
 
-   // equals, not equals operator
-   bool operator != (const iterator& rhs) const { return true; }
-   bool operator == (const iterator& rhs) const { return true; }
+        // equals, not equals operator
+        bool operator != (const iterator& rhs) const { return p != rhs.p; }
+        bool operator == (const iterator& rhs) const { return p == rhs.p; }
 
-   // dereference operator
-   T& operator * ()
-   {
-      return *(new T);
-   }
+        // dereference operator
+        T& operator * () { return *p; }
 
-   // prefix increment
-   iterator& operator ++ ()
-   {
-      return *this;
-   }
+        // prefix increment
+        iterator& operator ++ ()
+        {
+            ++p;
+            return *this;
+        }
 
-   // postfix increment
-   iterator operator ++ (int postfix)
-   {
-      return *this;
-   }
+        // postfix increment
+        iterator operator ++ (int postfix)
+        {
+            iterator tmp = *this;
+            ++p;
+            return tmp;
+        }
 
-   // prefix decrement
-   iterator& operator -- ()
-   {
-      return *this;
-   }
+        // prefix decrement
+        iterator& operator -- ()
+        {
+            --p;
+            return *this;
+        }
 
-   // postfix decrement
-   iterator operator -- (int postfix)
-   {
-      return *this;
-   }
+        // postfix decrement
+        iterator operator -- (int postfix)
+        {
+            iterator tmp = *this;
+            --p;
+            return tmp;
+        }
 
-private:
-   T* p;
-};
+    private:
+        T* p;
+    };
 
 /*****************************************
  * VECTOR :: DEFAULT constructors
