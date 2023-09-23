@@ -4,18 +4,18 @@
  * Summary:
  *    Our custom implementation of std::vector
  *
- *      __       ____       ____         __
- *     /  |    .'    '.   .'    '.   _  / /
- *     `| |   |  .--.  | |  .--.  | (_)/ /
- *      | |   | |    | | | |    | |   / / _
- *     _| |_  |  `--'  | |  `--'  |  / / (_)
- *    |_____|  '.____.'   '.____.'  /_/
+ *    __       ____       ____         __
+ *   /  |    .'    '.   .'    '.   _  / /
+ *   `| |   |  .--.  | |  .--.  | (_)/ /
+ *    | |   | |    | | | |    | |   / / _
+ *   _| |_  |  `--'  | |  `--'  |  / / (_)
+ *  |_____|  '.____.'   '.____.'  /_/
  *
  *
  *    This will contain the class definition of:
  *        vector                 : A class that represents a Vector
- *        vector::iterator       : An interator through Vector
- * Author
+ *        vector::iterator       : An iterator through Vector
+ * Author:
  *    <your names here>
  ************************************************************************/
 
@@ -123,18 +123,17 @@ namespace custom
         size_t numElements;       // the number of items currently used
     };
 
-
-/**************************************************
- * VECTOR ITERATOR
- * An iterator through vector.  You only need to
- * support the following:
- *   1. Constructors (default and copy)
- *   2. Not equals operator
- *   3. Increment (prefix and postfix)
- *   4. Dereference
- * This particular iterator is a bi-directional meaning
- * that ++ and -- both work.  Not all iterators are that way.
- *************************************************/
+    /**************************************************
+     * VECTOR ITERATOR
+     * An iterator through vector.  You only need to
+     * support the following:
+     *   1. Constructors (default and copy)
+     *   2. Not equals operator
+     *   3. Increment (prefix and postfix)
+     *   4. Dereference
+     * This particular iterator is a bi-directional meaning
+     * that ++ and -- both work.  Not all iterators are that way.
+     *************************************************/
     template <typename T>
     class vector <T>::iterator
     {
@@ -195,300 +194,259 @@ namespace custom
         T* p;
     };
 
-/*****************************************
- * VECTOR :: DEFAULT constructors
- * Default constructor: set the number of elements,
- * construct each element, and copy the values over
- ****************************************/
-template <typename T>
-vector <T> :: vector()
-{
-    data = nullptr;
-    numCapacity = 0;
-    numElements = 0;
-}
+    //
+    // VECTOR METHOD IMPLEMENTATIONS
+    //
 
-/*****************************************
- * VECTOR :: NON-DEFAULT constructors
- * non-default constructor: set the number of elements,
- * construct each element, and copy the values over
- ****************************************/
-template <typename T>
-vector <T> :: vector(size_t num, const T & t) 
-{
-    data = new T[num];
-    numCapacity = num;
-    numElements = num;
-    
-    for (int i = 0; i < numElements; ++i) {
-        data[i] = t;
+    // Constructors
+    template <typename T>
+    vector <T>::vector()
+    {
+        data = nullptr;
+        numCapacity = 0;
+        numElements = 0;
     }
 
-}
-
-/*****************************************
- * VECTOR :: INITIALIZATION LIST constructors
- * Create a vector with an initialization list.
- ****************************************/
-template <typename T>
-vector <T> :: vector(const std::initializer_list<T> & l) 
-{
-    numCapacity = l.size();
-    numElements = l.size();
-    data = new T[numCapacity];
-    for (const T& element: l) {
-        data[numElements++] = element;
+    template <typename T>
+    vector <T>::vector(size_t numElements)
+    {
+        data = new T[numElements];
+        numCapacity = numElements;
+        this->numElements = numElements;
     }
-}
 
-/*****************************************
- * VECTOR :: NON-DEFAULT constructors
- * non-default constructor: set the number of elements,
- * construct each element, and copy the values over
- ****************************************/
-template <typename T>
-vector <T> :: vector(size_t num) 
-{
-    data = new T[num];
-    numCapacity = num;
-    numElements = num;
-}
+    template <typename T>
+    vector <T>::vector(size_t numElements, const T& t)
+    {
+        data = new T[numElements];
+        numCapacity = numElements;
+        this->numElements = numElements;
 
-/*****************************************
- * VECTOR :: COPY CONSTRUCTOR
- * Allocate the space for numElements and
- * call the copy constructor on each element
- ****************************************/
-template <typename T>
-vector <T> :: vector (const vector & rhs) 
-{
-   data = new T[10];
-   numCapacity = 99;
-   numElements = 99;
-}
-
-/*****************************************
- * VECTOR :: MOVE CONSTRUCTOR
- * Steal the values from the RHS and set it to zero.
- ****************************************/
-template <typename T>
-vector <T> :: vector (vector && rhs)
-{
-    numCapacity = rhs.size();
-    numElements = rhs.size();
-    data = rhs.data;
-    
-    rhs.data = nullptr;
-    rhs.numCapacity = 0;
-    rhs.numElements = 0;
-   
-}
-
-/*****************************************
- * VECTOR :: DESTRUCTOR
- * Call the destructor for each element from 0..numElements
- * and then free the memory
- ****************************************/
-template <typename T>
-vector <T> :: ~vector()
-{
-   
-}
-
-/***************************************
- * VECTOR :: RESIZE
- * This method will adjust the size to newElements.
- * This will either grow or shrink newElements.
- *     INPUT  : newCapacity the size of the new buffer
- *     OUTPUT :
- **************************************/
-template <typename T>
-void vector <T> :: resize(size_t newElements)
-{
-   
-}
-
-template <typename T>
-void vector <T> :: resize(size_t newElements, const T & t)
-{
-   
-}
-
-/***************************************
- * VECTOR :: RESERVE
- * This method will grow the current buffer
- * to newCapacity.  It will also copy all
- * the data from the old buffer into the new
- *     INPUT  : newCapacity the size of the new buffer
- *     OUTPUT :
- **************************************/
-template <typename T>
-void vector <T> :: reserve(size_t newCapacity)
-{
-   numCapacity = 99;
-}
-
-/***************************************
- * VECTOR :: SHRINK TO FIT
- * Get rid of any extra capacity
- *     INPUT  :
- *     OUTPUT :
- **************************************/
-template <typename T>
-void vector <T> :: shrink_to_fit()
-{
-   
-}
-
-
-
-/*****************************************
- * VECTOR :: SUBSCRIPT
- * Read-Write access
- ****************************************/
-template <typename T>
-T & vector <T> :: operator [] (size_t index)
-{
-   return *(new T);
-   
-}
-
-/******************************************
- * VECTOR :: SUBSCRIPT
- * Read-Write access
- *****************************************/
-template <typename T>
-const T & vector <T> :: operator [] (size_t index) const
-{
-   return *(new T);
-}
-
-/*****************************************
- * VECTOR :: FRONT
- * Read-Write access
- ****************************************/
-template <typename T>
-T & vector <T> :: front ()
-{
-   
-   return *(new T);
-}
-
-/******************************************
- * VECTOR :: FRONT
- * Read-Write access
- *****************************************/
-template <typename T>
-const T & vector <T> :: front () const
-{
-   return *(new T);
-}
-
-/*****************************************
- * VECTOR :: FRONT
- * Read-Write access
- ****************************************/
-template <typename T>
-T & vector <T> :: back()
-{
-   return *(new T);
-}
-
-/******************************************
- * VECTOR :: FRONT
- * Read-Write access
- *****************************************/
-template <typename T>
-const T & vector <T> :: back() const
-{
-   return *(new T);
-}
-
-/***************************************
- * VECTOR :: PUSH BACK
- * This method will add the element 't' to the
- * end of the current buffer.  It will also grow
- * the buffer as needed to accomodate the new element
- *     INPUT  : 't' the new element to be added
- *     OUTPUT : *this
- **************************************/
-template <typename T>
-void vector <T> :: push_back (const T & t) {
-    if (numElements >= numCapacity) {
-        numCapacity += 1;
-        T* new_data = new T[numCapacity];
-        
-        for (int i = 0; i < numElements; ++i) {
-            new_data[i] = data[i];
+        for (size_t i = 0; i < numElements; ++i) {
+            data[i] = t;
         }
-        
-        delete[] data;
-        
-        data = new_data;
     }
-    data[numElements++] = t;
-}
 
-template <typename T>
-void vector <T> ::push_back(T && t)
-{
-    if (numElements >= numCapacity) {
-        numCapacity += 1;
-        T* new_data = new T[numCapacity];
-        
-        for (int i = 0; i < numElements; ++i) {
-            new_data[i] = data[i];
+    template <typename T>
+    vector <T>::vector(const std::initializer_list<T>& l)
+    {
+        numCapacity = l.size();
+        numElements = l.size();
+        data = new T[numCapacity];
+
+        size_t i = 0;
+        for (const T& element : l) {
+            data[i++] = element;
         }
-        
+    }
+
+    template <typename T>
+    vector <T>::vector(const vector& rhs)
+    {
+        numCapacity = rhs.numCapacity;
+        numElements = rhs.numElements;
+        data = new T[numCapacity];
+
+        for (size_t i = 0; i < numElements; ++i) {
+            data[i] = rhs.data[i];
+        }
+    }
+
+    template <typename T>
+    vector <T>::vector(vector&& rhs)
+    {
+        numCapacity = rhs.numCapacity;
+        numElements = rhs.numElements;
+        data = rhs.data;
+
+        rhs.data = nullptr;
+        rhs.numCapacity = 0;
+        rhs.numElements = 0;
+    }
+
+    // Destructor
+    template <typename T>
+    vector <T>::~vector()
+    {
         delete[] data;
-        
-        data = new_data;
     }
-    data[numElements++] = std::move(t);
-   
-}
 
-/***************************************
- * VECTOR :: ASSIGNMENT
- * This operator will copy the contents of the
- * rhs onto *this, growing the buffer as needed
- *     INPUT  : rhs the vector to copy from
- *     OUTPUT : *this
- **************************************/
-template <typename T>
-vector <T> & vector <T> :: operator = (const vector & rhs)
-{
-    delete[] data;
-    numCapacity = rhs.numCapacity;
-    numElements = rhs.numElements;
-    data = new T[numCapacity];
-    
-    for (size_t i = 0; i < numElements; ++i) {
-        data[i] = rhs.data[i];
+    // Iterator Methods
+    template <typename T>
+    typename vector <T>::iterator vector <T>::begin()
+    {
+        return iterator(data);
     }
-    return (*this);
-}
-template <typename T>
-vector <T>& vector <T> :: operator = (vector&& rhs)
-{
-    
-    delete[] data;
-    numCapacity = rhs.numCapacity;
-    numElements = rhs.numElements;
-    data = new T[numCapacity];
-    
-    for (int i = 0; i < numElements; i++) {
-        data[i] = rhs.data[i];
+
+    template <typename T>
+    typename vector <T>::iterator vector <T>::end()
+    {
+        return iterator(data + numElements);
     }
-    rhs.data = nullptr;
-    rhs.numCapacity = 0;
-    rhs.numElements = 0;
-    
-    return (*this);
-}
 
+    // Access Methods
+    template <typename T>
+    T& vector <T>::operator[](size_t index)
+    {
+        assert(index < numElements);
+        return data[index];
+    }
 
+    template <typename T>
+    const T& vector <T>::operator[](size_t index) const
+    {
+        assert(index < numElements);
+        return data[index];
+    }
 
+    template <typename T>
+    T& vector <T>::front()
+    {
+        assert(!empty());
+        return data[0];
+    }
+
+    template <typename T>
+    const T& vector <T>::front() const
+    {
+        assert(!empty());
+        return data[0];
+    }
+
+    template <typename T>
+    T& vector <T>::back()
+    {
+        assert(!empty());
+        return data[numElements - 1];
+    }
+
+    template <typename T>
+    const T& vector <T>::back() const
+    {
+        assert(!empty());
+        return data[numElements - 1];
+    }
+
+    // Insert Methods
+    template <typename T>
+    void vector <T>::push_back(const T& t)
+    {
+        if (numElements >= numCapacity) {
+            reserve(numCapacity == 0 ? 1 : numCapacity * 2);
+        }
+        data[numElements++] = t;
+    }
+
+    template <typename T>
+    void vector <T>::push_back(T&& t)
+    {
+        if (numElements >= numCapacity) {
+            reserve(numCapacity == 0 ? 1 : numCapacity * 2);
+        }
+        data[numElements++] = std::move(t);
+    }
+
+    template <typename T>
+    void vector <T>::reserve(size_t newCapacity)
+    {
+        if (newCapacity <= numCapacity) {
+            return;
+        }
+
+        T* newData = new T[newCapacity];
+
+        for (size_t i = 0; i < numElements; ++i) {
+            newData[i] = std::move(data[i]);
+        }
+
+        delete[] data;
+        data = newData;
+        numCapacity = newCapacity;
+    }
+
+    template <typename T>
+    void vector <T>::resize(size_t newElements)
+    {
+        if (newElements < numElements) {
+            numElements = newElements;
+        }
+        else if (newElements > numCapacity) {
+            reserve(newElements);
+            for (size_t i = numElements; i < newElements; ++i) {
+                data[i] = T();
+            }
+            numElements = newElements;
+        }
+        else {
+            for (size_t i = numElements; i < newElements; ++i) {
+                data[i] = T();
+            }
+            numElements = newElements;
+        }
+    }
+
+    template <typename T>
+    void vector <T>::resize(size_t newElements, const T& t)
+    {
+        if (newElements < numElements) {
+            numElements = newElements;
+        }
+        else if (newElements > numCapacity) {
+            reserve(newElements);
+            for (size_t i = numElements; i < newElements; ++i) {
+                data[i] = t;
+            }
+            numElements = newElements;
+        }
+        else {
+            for (size_t i = numElements; i < newElements; ++i) {
+                data[i] = t;
+            }
+            numElements = newElements;
+        }
+    }
+
+    // Remove Methods
+    template <typename T>
+    void vector <T>::clear()
+    {
+        numElements = 0;
+    }
+
+    template <typename T>
+    void vector <T>::pop_back()
+    {
+        if (!empty()) {
+            --numElements;
+        }
+    }
+
+    template <typename T>
+    void vector <T>::shrink_to_fit()
+    {
+        if (numCapacity > numElements) {
+            reserve(numElements);
+        }
+    }
+
+    // Status Methods
+    template <typename T>
+    size_t vector <T>::size() const
+    {
+        return numElements;
+    }
+
+    template <typename T>
+    size_t vector <T>::capacity() const
+    {
+        return numCapacity;
+    }
+
+    template <typename T>
+    bool vector <T>::empty() const
+    {
+        return numElements == 0;
+    }
 
 } // namespace custom
 
