@@ -33,101 +33,96 @@ class TestHash;
 namespace custom
 {
 
-/*****************************************
- * VECTOR
- * Just like the std :: vector <T> class
- ****************************************/
-template <typename T>
-class vector
-{
-   friend class ::TestVector; // give unit tests access to the privates
-   friend class ::TestStack;
-   friend class ::TestPQueue;
-   friend class ::TestHash;
-public:
-   
-   // 
-   // Construct
-   //
+    /*****************************************
+     * VECTOR
+     * Just like the std::vector<T> class
+     ****************************************/
+    template <typename T>
+    class vector
+    {
+        friend class ::TestVector; // give unit tests access to the privates
+        friend class ::TestStack;
+        friend class ::TestPQueue;
+        friend class ::TestHash;
+    public:
 
-   vector();
-   vector(size_t numElements                );
-   vector(size_t numElements, const T & t   );
-   vector(const std::initializer_list<T>& l );
-   vector(const vector &  rhs);
-   vector(      vector && rhs);
-   ~vector();
+        //
+        // Construct
+        //
 
-   //
-   // Assign
-   //
+        vector();
+        vector(size_t numElements);
+        vector(size_t numElements, const T& t);
+        vector(const std::initializer_list<T>& l);
+        vector(const vector& rhs);
+        vector(vector&& rhs);
+        ~vector();
 
-   void swap(vector& rhs)
-   {
+        //
+        // Assign
+        //
 
-   }
-   vector & operator = (const vector & rhs);
-   vector& operator = (vector&& rhs);
+        void swap(vector& rhs);
 
-   //
-   // Iterator
-   //
+        vector& operator=(const vector& rhs);
+        vector& operator=(vector&& rhs);
 
-   class iterator;
-   iterator       begin() { return iterator(); }
-   iterator       end() { return iterator(); }
+        //
+        // Iterator
+        //
 
-   //
-   // Access
-   //
+        class iterator;
+        iterator begin();
+        iterator end();
 
-         T& operator [] (size_t index);
-   const T& operator [] (size_t index) const;
-         T& front();
-   const T& front() const;
-         T& back();
-   const T& back() const;
+        //
+        // Access
+        //
 
-   //
-   // Insert
-   //
+        T& operator[](size_t index);
+        const T& operator[](size_t index) const;
+        T& front();
+        const T& front() const;
+        T& back();
+        const T& back() const;
 
-   void push_back(const T& t);
-   void push_back(T&& t);
-   void reserve(size_t newCapacity);
-   void resize(size_t newElements);
-   void resize(size_t newElements, const T& t);
+        //
+        // Insert
+        //
 
-   //
-   // Remove
-   //
+        void push_back(const T& t);
+        void push_back(T&& t);
+        void reserve(size_t newCapacity);
+        void resize(size_t newElements);
+        void resize(size_t newElements, const T& t);
 
-   void clear()
-   {
-   }
-   void pop_back()
-   {
-   }
-   void shrink_to_fit();
+        //
+        // Remove
+        //
 
-   //
-   // Status
-   //
+        void clear();
+        void pop_back();
+        void shrink_to_fit();
 
-   size_t  size()          const { return 999;}
-   size_t  capacity()      const { return 999;}
-   bool empty()            const { return true;}
-   
-   // adjust the size of the buffer
-   
-   // vector-specific interfaces
-   
-private:
-   
-   T *  data;                 // user data, a dynamically-allocated array
-   size_t  numCapacity;       // the capacity of the array
-   size_t  numElements;       // the number of items currently used
-};
+        //
+        // Status
+        //
+
+        size_t size() const;
+        size_t capacity() const;
+        bool empty() const;
+
+        // adjust the size of the buffer
+
+        // vector-specific interfaces
+
+    private:
+
+        T* data;                 // user data, a dynamically-allocated array
+        size_t numCapacity;       // the capacity of the array
+        size_t numElements;       // the number of items currently used
+    };
+
 
 /**************************************************
  * VECTOR ITERATOR
