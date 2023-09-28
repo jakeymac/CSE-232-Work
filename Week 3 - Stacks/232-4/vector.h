@@ -46,7 +46,7 @@ class vector
    friend class ::TestHash;
 public:
    
-   // 
+   //
    // Construct
    //
 
@@ -64,7 +64,9 @@ public:
 
    void swap(vector& rhs)
    {
-
+       std::swap(data, rhs.data);
+       std::swap(numCapacity, rhs.numCapacity);
+       std::swap(numElements, rhs.numElements);
    }
    vector & operator = (const vector & rhs);
    vector& operator = (vector&& rhs);
@@ -74,8 +76,8 @@ public:
    //
 
    class iterator;
-   iterator       begin() { return iterator(); }
-   iterator       end() { return iterator(); }
+    iterator       begin() { return iterator(data); }
+    iterator        end() { return iterator(data + numElements); }
 
    //
    // Access
@@ -104,9 +106,14 @@ public:
 
    void clear()
    {
+       numElements = 0;
    }
    void pop_back()
    {
+       if (numElements > 0) {
+           --numElements;
+       }
+       
    }
    void shrink_to_fit();
 
@@ -114,9 +121,9 @@ public:
    // Status
    //
 
-   size_t  size()          const { return 999;}
-   size_t  capacity()      const { return 999;}
-   bool empty()            const { return true;}
+    size_t  size()          const { return numElements;}
+    size_t  capacity()      const { return numCapacity;}
+    bool empty()            const { return numElements == 0;}
    
    // adjust the size of the buffer
    
@@ -149,48 +156,55 @@ class vector <T> ::iterator
    friend class ::TestHash;
 public:
    // constructors, destructors, and assignment operator
-   iterator()                           { this->p = new T; }
-   iterator(T* p)                       { this->p = new T; }
-   iterator(const iterator& rhs)        { this->p = new T; }
-   iterator(size_t index, vector<T>& v) { this->p = new T; }
+   iterator()                           { this->p = nullptr; }
+   iterator(T* p)                       { this->p = p; }
+   iterator(const iterator& rhs)        { this->p = rhs.p; }
+    iterator(size_t index, vector<T>& v) { this->p = &v.data[index]; }
    iterator& operator = (const iterator& rhs)
    {
-      this->p = new T;
+      p = rhs.p;
       return *this;
    }
 
+    
    // equals, not equals operator
-   bool operator != (const iterator& rhs) const { return true; }
-   bool operator == (const iterator& rhs) const { return true; }
+   bool operator != (const iterator& rhs) const { return p != rhs.p; }
+   bool operator == (const iterator& rhs) const { return p == rhs.p; }
 
    // dereference operator
    T& operator * ()
    {
-      return *(new T);
+      return *(p);
    }
 
    // prefix increment
    iterator& operator ++ ()
    {
+       ++p;
       return *this;
    }
 
    // postfix increment
    iterator operator ++ (int postfix)
    {
-      return *this;
+       iterator tmp = *this;
+       ++p;
+      return tmp;
    }
 
    // prefix decrement
    iterator& operator -- ()
    {
+       --p;
       return *this;
    }
 
    // postfix decrement
    iterator operator -- (int postfix)
    {
-      return *this;
+       iterator tmp = *this;
+       --p;
+      return tmp;
    }
 
 private:
@@ -205,9 +219,9 @@ private:
 template <typename T>
 vector <T> :: vector()
 {
-   data = new T[10];
-   numCapacity = 99;
-   numElements = 99;
+    data = nullptr;
+    numCapacity = 0;
+    numElements = 0;
 }
 
 /*****************************************
@@ -216,11 +230,21 @@ vector <T> :: vector()
  * construct each element, and copy the values over
  ****************************************/
 template <typename T>
-vector <T> :: vector(size_t num, const T & t) 
+vector <T> :: vector(size_t num, const T & t)
 {
-   data = new T[10];
-   numCapacity = 99;
-   numElements = 99;
+    if (num == 0) {
+        data = nullptr;
+    } else {
+        data = new T[num];
+    }
+    
+    numCapacity = num;
+    numElements = num;
+    
+    for (int i = 0; i < numElements; ++i) {
+        data[i] = t;
+    }
+
 }
 
 /*****************************************
@@ -228,11 +252,14 @@ vector <T> :: vector(size_t num, const T & t)
  * Create a vector with an initialization list.
  ****************************************/
 template <typename T>
-vector <T> :: vector(const std::initializer_list<T> & l) 
+vector <T> :: vector(const std::initializer_list<T> & l)
 {
-   data = new T[10];
-   numCapacity = 99;
-   numElements = 99;
+    numCapacity = l.size();
+    numElements = 0;
+    data = new T[numCapacity];
+    for (const T& element: l) {
+        data[numElements++] = element;
+    }
 }
 
 /*****************************************
@@ -241,11 +268,15 @@ vector <T> :: vector(const std::initializer_list<T> & l)
  * construct each element, and copy the values over
  ****************************************/
 template <typename T>
-vector <T> :: vector(size_t num) 
+vector <T> :: vector(size_t num)
 {
-   data = new T[10];
-   numCapacity = 99;
-   numElements = 99;
+    if (num == 0) {
+        data = nullptr;
+    } else {
+        data = new T[num];
+    }
+    numCapacity = num;
+    numElements = num;
 }
 
 /*****************************************
@@ -254,11 +285,20 @@ vector <T> :: vector(size_t num)
  * call the copy constructor on each element
  ****************************************/
 template <typename T>
-vector <T> :: vector (const vector & rhs) 
+vector <T> :: vector (const vector & rhs)
 {
-   data = new T[10];
-   numCapacity = 99;
-   numElements = 99;
+    numCapacity = rhs.numElements;
+    numElements = rhs.numElements;
+    if (rhs.numCapacity == 0) {
+        data = nullptr;
+    }
+    else {
+        data = new T[numCapacity];
+    }
+
+    for (size_t i = 0; i < numElements; ++i) {
+        data[i] = rhs.data[i];
+    }
 }
 
 /*****************************************
@@ -268,9 +308,15 @@ vector <T> :: vector (const vector & rhs)
 template <typename T>
 vector <T> :: vector (vector && rhs)
 {
-   data = new T[10];
-   numCapacity = 99;
-   numElements = 99;
+    
+    numCapacity = rhs.numCapacity;
+    numElements = rhs.numElements;
+    data = rhs.data;
+    
+    rhs.data = nullptr;
+    rhs.numCapacity = 0;
+    rhs.numElements = 0;
+   
 }
 
 /*****************************************
@@ -281,8 +327,9 @@ vector <T> :: vector (vector && rhs)
 template <typename T>
 vector <T> :: ~vector()
 {
-   
+    delete[] data;
 }
+
 
 /***************************************
  * VECTOR :: RESIZE
@@ -294,13 +341,64 @@ vector <T> :: ~vector()
 template <typename T>
 void vector <T> :: resize(size_t newElements)
 {
-   
+    if (newElements == numElements) {
+        return;
+    }
+    
+    if (newElements < numElements) {
+        numElements = newElements;
+    } else if (newElements > numCapacity) {
+        T* new_data = new T[newElements];
+        
+        for (size_t i = 0; i < numElements; ++i) {
+            new_data[i] = data[i];
+        }
+        
+        delete[] data;
+        
+        data = new_data;
+        numCapacity = newElements;
+        numElements = newElements;
+    } else {
+        numElements = newElements;
+    }
 }
 
 template <typename T>
 void vector <T> :: resize(size_t newElements, const T & t)
 {
-   
+    if (newElements == numElements) {
+        return;
+    }
+    
+    if (newElements < numElements) {
+        numElements = newElements;
+        return;
+    }
+    
+    if (newElements > numCapacity) {
+        T* new_data = new T[newElements];
+        
+        for (size_t i = 0; i < numElements; ++i) {
+            new_data[i] = data[i];
+        }
+        
+        for (size_t i = numElements; i < newElements; ++i) {
+            new_data[i] = t;
+        }
+        
+        delete[] data;
+        
+        data = new_data;
+        
+        numCapacity = newElements;
+        
+    } else {
+        for (size_t i = numElements; i < newElements; ++i) {
+            data[i] = t;
+        }
+    }
+    numElements = newElements;
 }
 
 /***************************************
@@ -314,7 +412,18 @@ void vector <T> :: resize(size_t newElements, const T & t)
 template <typename T>
 void vector <T> :: reserve(size_t newCapacity)
 {
-   numCapacity = 99;
+    if (newCapacity > numCapacity) {
+        
+        T* newData = new T[newCapacity];
+        
+        for (size_t i = 0; i < numElements; ++i) {
+            newData[i] = data[i];
+        }
+        
+        delete[] data;
+        data = newData;
+        numCapacity = newCapacity;
+    }
 }
 
 /***************************************
@@ -326,7 +435,10 @@ void vector <T> :: reserve(size_t newCapacity)
 template <typename T>
 void vector <T> :: shrink_to_fit()
 {
-   
+    numCapacity = numElements;
+    if (numCapacity == 0) {
+        data = nullptr;
+    }
 }
 
 
@@ -338,7 +450,7 @@ void vector <T> :: shrink_to_fit()
 template <typename T>
 T & vector <T> :: operator [] (size_t index)
 {
-   return *(new T);
+    return data[index];
    
 }
 
@@ -349,7 +461,7 @@ T & vector <T> :: operator [] (size_t index)
 template <typename T>
 const T & vector <T> :: operator [] (size_t index) const
 {
-   return *(new T);
+    return data[index];
 }
 
 /*****************************************
@@ -360,7 +472,7 @@ template <typename T>
 T & vector <T> :: front ()
 {
    
-   return *(new T);
+   return data[0];
 }
 
 /******************************************
@@ -370,7 +482,7 @@ T & vector <T> :: front ()
 template <typename T>
 const T & vector <T> :: front () const
 {
-   return *(new T);
+   return data[0];
 }
 
 /*****************************************
@@ -380,7 +492,7 @@ const T & vector <T> :: front () const
 template <typename T>
 T & vector <T> :: back()
 {
-   return *(new T);
+   return data[numElements - 1];
 }
 
 /******************************************
@@ -390,7 +502,7 @@ T & vector <T> :: back()
 template <typename T>
 const T & vector <T> :: back() const
 {
-   return *(new T);
+    return data[numElements - 1];
 }
 
 /***************************************
@@ -402,15 +514,44 @@ const T & vector <T> :: back() const
  *     OUTPUT : *this
  **************************************/
 template <typename T>
-void vector <T> :: push_back (const T & t)
-{
-   
+void vector <T> :: push_back (const T & t) {
+    if (numCapacity == 0) {
+        numCapacity = 1;
+        data = new T[1];
+    } else if (numElements >= numCapacity) {
+        numCapacity *= 2;
+        T* new_data = new T[numCapacity];
+        
+        for (int i = 0; i < numElements; ++i) {
+            new_data[i] = data[i];
+        }
+        
+        delete[] data;
+        
+        data = new_data;
+    }
+    data[numElements++] = t;
 }
 
 template <typename T>
 void vector <T> ::push_back(T && t)
 {
-   
+    if (numCapacity == 0) {
+        numCapacity = 1;
+        data = new T[1];
+    } else if (numElements >= numCapacity) {
+        numCapacity *= 2;
+        T* new_data = new T[numCapacity];
+        
+        for (int i = 0; i < numElements; ++i) {
+            new_data[i] = data[i];
+        }
+        
+        delete[] data;
+        
+        data = new_data;
+    }
+    data[numElements++] = std::move(t);
    
 }
 
@@ -422,16 +563,60 @@ void vector <T> ::push_back(T && t)
  *     OUTPUT : *this
  **************************************/
 template <typename T>
-vector <T> & vector <T> :: operator = (const vector & rhs)
-{
-   
-   return *this;
+vector<T>& vector<T>::operator=(const vector& rhs) {
+    // Check for self-assignment
+    if (this == &rhs) {
+        return *this;
+    }
+
+    // Deallocate the existing data
+    delete[] data;
+
+    // Copy the data from rhs
+    if (numCapacity <= rhs.numCapacity) {
+        numCapacity = rhs.numCapacity;
+    }
+    numElements = rhs.numElements;
+    if (rhs.data ==  nullptr) {
+        data = nullptr;
+    } else {
+        data = new T[numCapacity];
+    }
+
+    // Copy the elements from rhs to this
+    for (size_t i = 0; i < numElements; ++i) {
+        data[i] = rhs.data[i];
+    }
+
+    return *this;
 }
 template <typename T>
-vector <T>& vector <T> :: operator = (vector&& rhs)
-{
+vector<T>& vector<T>::operator=(vector&& rhs) {
+    // Check for self-assignment
+    if (this == &rhs) {
+        return *this;
+    }
+    
+    
 
-   return *this;
+    // Deallocate the existing data
+    delete[] data;
+
+    // Move ownership of data, capacity, and size from rhs to this
+    
+    data = rhs.data;
+    //numCapacity = rhs.numCapacity;
+    if (rhs.numCapacity > numCapacity) {
+        numCapacity = rhs.numCapacity;
+    }
+    numElements = rhs.numElements;
+
+    // Reset rhs to a valid but empty state
+    rhs.data = nullptr;
+    rhs.numCapacity = 0;
+    rhs.numElements = 0;
+
+    return *this;
 }
 
 

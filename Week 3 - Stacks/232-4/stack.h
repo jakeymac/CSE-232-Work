@@ -43,11 +43,11 @@ public:
    // Construct
    // 
 
-   stack()                            { container.resize(7); }
-   stack(const stack <T> &  rhs)      { container.resize(7); }
-   stack(      stack <T> && rhs)      { container.resize(7); }
-   stack(const std::vector<T> &  rhs) { container.resize(7); }
-   stack(      std::vector<T> && rhs) { container.resize(7); }
+    stack()                            { std::vector<T> container; }
+    stack(const stack <T> &  rhs)      { std::vector<T> container = rhs.container; }
+    stack(      stack <T> && rhs)      { std::vector<T> container = rhs.container; }
+    stack(const std::vector<T> &  rhs) { std::vector<T> container = rhs; }
+    stack(      std::vector<T> && rhs) { std::vector<T> container = rhs; }
    ~stack()                           {                      }
 
    //
@@ -56,30 +56,44 @@ public:
 
    stack <T> & operator = (const stack <T> & rhs)
    {
-      return *this;
+       container = rhs.container;
+       return *this;
    }
    stack <T>& operator = (stack <T> && rhs)
    {
-      return *this;
+       container = rhs.container;
+       return *this;
    }
    void swap(stack <T>& rhs)
    {
-
+       std::vector<T> oldContainer = container;
+       container = rhs.container;
+       rhs.container = oldContainer;
    }
 
    // 
    // Access
    //
 
-         T& top()       { return *(new T); }
-   const T& top() const { return *(new T); }
+    T& top() {
+        if (container.empty()) {
+            throw std::runtime_error("Stack is empty");
+        }
+        return container.back();
+    }
+    const T& top() const {
+        if (container.empty()) {
+            throw std::runtime_error("Stack is empty");
+        }
+        return container.back();
+    }
 
    // 
    // Insert
    // 
 
-   void push(const T&  t) {  }
-   void push(      T&& t) {  }
+    void push(const T&  t) { container.push_back(t); }
+    void push(      T&& t) { container.push_back(t); }
 
    //
    // Remove
@@ -87,14 +101,14 @@ public:
 
    void pop() 
    { 
-      
+       container.pop_back();
    }
 
    //
    // Status
    //
-   size_t  size () const { return 99;  }
-   bool empty   () const { return true; }
+    size_t  size () const { return container.size();  }
+    bool empty   () const { return container.size() == 0; }
    
 private:
    
