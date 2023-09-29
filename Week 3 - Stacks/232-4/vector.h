@@ -605,7 +605,6 @@ vector<T>& vector<T>::operator=(vector&& rhs) {
     // Move ownership of data, capacity, and size from rhs to this
     
     data = rhs.data;
-    //numCapacity = rhs.numCapacity;
     if (rhs.numCapacity > numCapacity) {
         numCapacity = rhs.numCapacity;
     }
@@ -613,7 +612,6 @@ vector<T>& vector<T>::operator=(vector&& rhs) {
 
     // Reset rhs to a valid but empty state
     rhs.data = nullptr;
-    rhs.numCapacity = 0;
     rhs.numElements = 0;
 
     return *this;

@@ -23,6 +23,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BAEA56D72AC65EAE00EA1BEC /* old_stack.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = old_stack.cpp; sourceTree = "<group>"; };
+		BAEA56D82AC65EAE00EA1BEC /* old_stack.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = old_stack.hpp; sourceTree = "<group>"; };
 		C11AB52D25DAB470004BCD49 /* unitTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unitTest.h; sourceTree = "<group>"; };
 		C11AB52E25DAB470004BCD49 /* vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vector.h; sourceTree = "<group>"; };
 		C11AB52F25DAB470004BCD49 /* testSpy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testSpy.h; sourceTree = "<group>"; };
@@ -48,6 +50,8 @@
 		C1DBE3FE25601DCE003113E3 = {
 			isa = PBXGroup;
 			children = (
+				BAEA56D72AC65EAE00EA1BEC /* old_stack.cpp */,
+				BAEA56D82AC65EAE00EA1BEC /* old_stack.hpp */,
 				C11AB53025DAB470004BCD49 /* spy.h */,
 				C11AB52F25DAB470004BCD49 /* testSpy.h */,
 				C11AB53125DAB470004BCD49 /* testVector.h */,
@@ -101,7 +105,7 @@
 					};
 				};
 			};
-			buildConfigurationList = C1DBE40225601DCE003113E3 /* Build configuration list for PBXProject "115Key" */;
+			buildConfigurationList = C1DBE40225601DCE003113E3 /* Build configuration list for PBXProject "LabStack" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -263,7 +267,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C1DBE40225601DCE003113E3 /* Build configuration list for PBXProject "115Key" */ = {
+		C1DBE40225601DCE003113E3 /* Build configuration list for PBXProject "LabStack" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C1DBE40C25601DCE003113E3 /* Debug */,
