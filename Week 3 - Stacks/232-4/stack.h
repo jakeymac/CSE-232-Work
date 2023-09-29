@@ -23,6 +23,7 @@
 #include <cassert>  // because I am paranoid
 //#include "vector.h"
 #include <vector>
+#include <iostream>
 
 class TestStack; // forward declaration for unit tests
 
@@ -73,7 +74,15 @@ public:
    // Access
    //
 
-         T& top()       { return container.back(); }
+    T& top()
+    {
+        if (empty()) {
+            return container.back();
+        }
+        else {
+            throw std::out_of_range("Stack is empty.");
+        }
+    }
    const T& top() const { return container.back(); }
 
    //
@@ -93,7 +102,12 @@ public:
 
    void pop()
    {
-       container.pop_back();
+       if (size() > 0) {
+           container.pop_back();
+       }
+       else {
+           std::cout << "Nothing to pop, stack is empty\n";
+       }
    }
 
    //
