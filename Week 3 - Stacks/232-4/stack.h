@@ -66,9 +66,7 @@ public:
    }
    void swap(stack <T>& rhs)
    {
-       std::vector<T> temp = container;
-       container = rhs.container;
-       rhs.container = temp;
+       container.swap(rhs.container);
    }
 
    //
@@ -86,7 +84,7 @@ public:
        container.push_back(t);
    }
    void push(      T&& t) {
-       container.push_back(t);
+       container.push_back(std::move(t));
    }
 
    //

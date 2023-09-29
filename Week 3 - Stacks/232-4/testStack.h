@@ -1073,6 +1073,7 @@ public:
       // exercise
       s.push(std::move(value));
       // verify
+       int test = Spy::numCopyMove();
       assertUnit(Spy::numCopyMove() == 1);  // copy-constructor of [99]
       assertUnit(Spy::numCopy() == 0);
       assertUnit(Spy::numAlloc() == 0);
