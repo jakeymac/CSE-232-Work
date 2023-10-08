@@ -34,31 +34,17 @@ template <class T>
 class Node
 {
 public:
-    // Default Constructor
     Node()
     {
-        pPrev = pNext = this;
+       pPrev = pNext = this;
     }
-
-    // Copy Constructor
-    Node(const Node<T> &other)
+    Node(const T &  data)
     {
-        data = other.data;
-        pPrev = pNext = this;
+        this->data = data;
     }
-
-    // Move Constructor
-    Node(Node<T> &&other)
+    Node(      T && data)
     {
-        data = std::move(other.data);
-        pPrev = pNext = this;
-    }
-
-    // Constructor
-    Node(const T& value)
-        : data(value)
-    {
-        pPrev = pNext = this;
+        this->data = std::move(data);
     }
 
     T data;
@@ -250,6 +236,8 @@ inline Node<T>* insert(Node<T>* pCurrent, const T& t, bool after = false)
 
     if (!pCurrent)
     {
+        pNewNode->pNext = pNewNode;
+        pNewNode->pPrev = pNewNode;
         return pNewNode;
     }
 
