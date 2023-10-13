@@ -40,8 +40,8 @@ class list
    friend class ::TestList; // give unit tests access to the privates
    friend class ::TestHash;
    friend void swap(list& lhs, list& rhs);
-public:  
-   // 
+public:
+   //
    // Construct
    //
 
@@ -53,11 +53,11 @@ public:
    list(const std::initializer_list<T>& il);
    template <class Iterator>
    list(Iterator first, Iterator last);
-  ~list() 
+  ~list()
    {
    }
 
-   // 
+   //
    // Assign
    //
 
@@ -102,7 +102,7 @@ public:
    void clear();
    iterator erase(const iterator& it);
 
-   // 
+   //
    // Status
    //
 
@@ -160,15 +160,15 @@ class list <T> :: iterator
    friend class custom::list;
 public:
    // constructors, destructors, and assignment operator
-   iterator() 
+   iterator()
    {
       p = new typename list <T> ::Node;
    }
-   iterator(Node * p) 
+   iterator(Node * p)
    {
       p = new typename list <T> ::Node;
    }
-   iterator(const iterator  & rhs) 
+   iterator(const iterator  & rhs)
    {
       p = new typename list <T> ::Node;
    }
@@ -209,7 +209,7 @@ public:
    iterator & operator -- ()
    {
       return *this;
-   } 
+   }
 
    // two friends who need to access p directly
    friend iterator list <T> :: insert(iterator it, const T &  data);
@@ -226,7 +226,7 @@ private:
  * Create a list initialized to a value
  ****************************************/
 template <typename T>
-list <T> ::list(size_t num, const T & t) 
+list <T> ::list(size_t num, const T & t)
 {
     for (size_t i = 0; i < num; i++) {
         push_back(t);
@@ -271,7 +271,7 @@ list <T> ::list(size_t num)
  * LIST :: DEFAULT constructors
  ****************************************/
 template <typename T>
-list <T> ::list() 
+list <T> ::list()
 {
    numElements = 99;
    pHead = pTail = new list <T> ::Node();
@@ -281,7 +281,7 @@ list <T> ::list()
  * LIST :: COPY constructors
  ****************************************/
 template <typename T>
-list <T> ::list(list& rhs) 
+list <T> ::list(list& rhs)
 {
    numElements = 99;
    pHead = pTail = new list <T> ::Node();
@@ -303,7 +303,7 @@ list <T> ::list(list <T>&& rhs)
  * Copy one list onto another
  *     INPUT  : a list to be moved
  *     OUTPUT :
- *     COST   : O(n) with respect to the size of the LHS 
+ *     COST   : O(n) with respect to the size of the LHS
  *********************************************/
 template <typename T>
 list <T>& list <T> :: operator = (list <T> && rhs)
@@ -404,7 +404,7 @@ void list <T> ::push_front(T && data)
 /*********************************************
  * LIST :: POP BACK
  * remove an item from the end of the list
- *    INPUT  : 
+ *    INPUT  :
  *    OUTPUT :
  *    COST   : O(1)
  *********************************************/
@@ -430,40 +430,77 @@ void list <T> ::pop_front()
 /*********************************************
  * LIST :: FRONT
  * retrieves the first element in the list
- *     INPUT  : 
+ *     INPUT  :
  *     OUTPUT : data to be displayed
  *     COST   : O(1)
  *********************************************/
 template <typename T>
 T & list <T> :: front()
 {
-   return *(new T);
+    if (pHead == nullptr)
+    {
+        throw std::runtime_error("List is empty");
+    }
+
+    return pHead->data;
 }
 
 /*********************************************
  * LIST :: BACK
  * retrieves the last element in the list
- *     INPUT  : 
+ *     INPUT  :
  *     OUTPUT : data to be displayed
  *     COST   : O(1)
  *********************************************/
 template <typename T>
 T & list <T> :: back()
 {
-   return *(new T);
+    if (pTail == nullptr)
+    {
+        throw std::runtime_error("List is empty");
+    }
+
+    return pTail->data;
 }
 
 /******************************************
  * LIST :: REMOVE
  * remove an item from the middle of the list
  *     INPUT  : an iterator to the item being removed
- *     OUTPUT : iterator to the new location 
+ *     OUTPUT : iterator to the new location
  *     COST   : O(1)
  ******************************************/
 template <typename T>
 typename list <T> :: iterator  list <T> :: erase(const list <T> :: iterator & it)
 {
-   return end();
+    
+    if (it == end())
+    {
+        return end();
+    }
+
+    Node* nodeToRemove = it.p;
+    Node* nextNode = nodeToRemove->pNext;
+    Node* prevNode = nodeToRemove->pPrev;
+
+    if (nextNode != nullptr)
+    {
+        nextNode->pPrev = prevNode;
+    }
+    if (prevNode != nullptr)
+    {
+        prevNode->pNext = nextNode;
+    }
+
+    if (nodeToRemove == pHead)
+    {
+        pHead = nextNode;
+    }
+
+    delete nodeToRemove;
+    --this->numElements;
+
+    return iterator(nextNode);
 }
 
 /******************************************
@@ -476,16 +513,39 @@ typename list <T> :: iterator  list <T> :: erase(const list <T> :: iterator & it
  ******************************************/
 template <typename T>
 typename list <T> :: iterator list <T> :: insert(list <T> :: iterator it,
-                                                 const T & data) 
+                                                 const T & data)
 {
-   return end();
+    Node* newNode = new Node(data);
+    newNode->pNext = it.p;
+    newNode->pPrev = it.p->pPrev;
+    it.p->pPrev->pNext = newNode;
+    it.p->pPrev = newNode;
+
+    if (it.p == pHead) {
+        pHead = newNode;
+    }
+
+    ++this->numElements;
+
+    return iterator(newNode);
 }
 
 template <typename T>
-typename list <T> :: iterator list <T> :: insert(list <T> :: iterator it,
-   T && data)
+typename list<T>::iterator list<T>::insert(typename list<T>::iterator it, T&& data)
 {
-   return end();
+    Node* newNode = new Node(std::move(data));
+    newNode->pNext = it.p;
+    newNode->pPrev = it.p->pPrev;
+    it.p->pPrev->pNext = newNode;
+    it.p->pPrev = newNode;
+
+    if (it.p == pHead) {
+        pHead = newNode;
+    }
+
+    ++this->numElements;
+
+    return iterator(newNode);
 }
 
 /**********************************************
@@ -498,7 +558,7 @@ typename list <T> :: iterator list <T> :: insert(list <T> :: iterator it,
 template <typename T>
 void swap(list <T> & lhs, list <T> & rhs)
 {
-
+    std::swap(lhs, rhs);
 }
 
 template <typename T>
