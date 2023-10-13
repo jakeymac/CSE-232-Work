@@ -106,8 +106,8 @@ public:
    // Status
    //
 
-   bool empty()  const { return true; }
-   size_t size() const { return 99;   }
+   bool empty()  const { return (numElements == 0); }
+   size_t size() const { return numElements;   }
 
 
 private:
@@ -134,18 +134,9 @@ public:
    //
    // Construct
    //
-   Node()  
-   {
-      pNext = pPrev = nullptr;
-   }
-   Node(const T &  data)  
-   {
-      pNext = pPrev = nullptr;
-   }
-   Node(      T && data)  
-   {
-      pNext = pPrev = nullptr;
-   }
+    Node(               ) : pNext(nullptr), pPrev(nullptr), data(               ) { }
+    Node(const T &  data) : pNext(nullptr), pPrev(nullptr), data(data           ) { }
+    Node(      T && data) : pNext(nullptr), pPrev(nullptr), data(std::move(data)) { }
 
    //
    // Data
@@ -237,8 +228,9 @@ private:
 template <typename T>
 list <T> ::list(size_t num, const T & t) 
 {
-   numElements = 99;
-   pHead = pTail = new list <T> ::Node();
+    for (size_t i = 0; i < num; i++) {
+        push_back(t);
+    }
 }
 
 /*****************************************
@@ -368,7 +360,19 @@ void list <T> :: clear()
 template <typename T>
 void list <T> :: push_back(const T & data)
 {
-
+    Node* newNode = new list<T> :: Node(data);
+    if (pHead) {
+        
+        newNode->pPrev = pTail;
+        pTail->pNext = newNode;
+        pTail = newNode;
+        
+    } else {
+        pHead = newNode;
+        pTail = newNode;
+    }
+    
+    numElements++;
 }
 
 template <typename T>

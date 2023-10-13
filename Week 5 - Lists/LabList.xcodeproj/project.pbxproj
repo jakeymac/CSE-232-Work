@@ -23,6 +23,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BA0E21802AD9248600CCBFE5 /* node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = node.h; sourceTree = "<group>"; };
 		C124BEC525D4DF7F004BB98F /* unitTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unitTest.h; sourceTree = "<group>"; };
 		C1FD5BD52566E954003E892E /* List_115_Key */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = List_115_Key; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1FD5BE12566E982003E892E /* testList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = testList.cpp; sourceTree = "<group>"; };
@@ -48,6 +49,7 @@
 				C1FD5BE32566E982003E892E /* list.h */,
 				C1FD5BE12566E982003E892E /* testList.cpp */,
 				C1FD5BE22566E982003E892E /* testList.h */,
+				BA0E21802AD9248600CCBFE5 /* node.h */,
 				C1FD5BD62566E954003E892E /* Products */,
 			);
 			sourceTree = "<group>";
