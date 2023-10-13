@@ -15,7 +15,7 @@
  *        List         : A class that represents a List
  *        ListIterator : An iterator through List
  * Author
- *    <your names here>
+ *    <Jacob Johnson and Tyler Elms>
  ************************************************************************/
 
 #pragma once
@@ -263,8 +263,9 @@ list <T> ::list(const std::initializer_list<T>& il)
 template <typename T>
 list <T> ::list(size_t num)
 {
-   numElements = 99;
-   pHead = pTail = new list <T> ::Node();
+    for (size_t i = 0; i < num; ++i) {
+        push_back(/*needs var*/);
+    }
 }
 
 /*****************************************
@@ -283,8 +284,10 @@ list <T> ::list()
 template <typename T>
 list <T> ::list(list& rhs)
 {
-   numElements = 99;
-   pHead = pTail = new list <T> ::Node();
+    for (const T& item : rhs)
+    {
+        push_back(item);
+    }
 }
 
 /*****************************************
@@ -294,8 +297,11 @@ list <T> ::list(list& rhs)
 template <typename T>
 list <T> ::list(list <T>&& rhs)
 {
-   numElements = 99;
-   pHead = pTail = new list <T> ::Node();
+    numElements = rhs.numElements;
+    pHead = rhs.pHead;
+    pTail = rhs.pTail;
+    rhs.numElements = 0;
+    rhs.pHead = rhs.pTail = nullptr;
 }
 
 /**********************************************
@@ -308,7 +314,17 @@ list <T> ::list(list <T>&& rhs)
 template <typename T>
 list <T>& list <T> :: operator = (list <T> && rhs)
 {
-   return *this;
+    if (this != &rhs)
+    {
+        clear();
+        pHead = rhs.pHead;
+        pTail = rhs.pTail;
+        numElements = rhs.numElements;
+        rhs.pHead = rhs.pTail = nullptr;
+        rhs.numElements = 0;
+    }
+
+    return *this;
 }
 
 /**********************************************
@@ -334,7 +350,14 @@ list <T> & list <T> :: operator = (list <T> & rhs)
 template <typename T>
 list <T>& list <T> :: operator = (const std::initializer_list<T>& rhs)
 {
-   return *this;
+    clear();
+    
+    for (const T& item : rhs)
+    {
+        push_back(item);
+    }
+    
+    return *this;
 }
 
 /**********************************************
@@ -347,7 +370,15 @@ list <T>& list <T> :: operator = (const std::initializer_list<T>& rhs)
 template <typename T>
 void list <T> :: clear()
 {
-
+    while (pHead != nullptr)
+    {
+        Node* p = pHead;
+        pHead = pHead->pNext;
+        delete p;
+    }
+    
+    pTail = nullptr;
+    numElements = 0;
 }
 
 /*********************************************
@@ -391,13 +422,35 @@ void list <T> ::push_back(T && data)
 template <typename T>
 void list <T> :: push_front(const T & data)
 {
+    Node* newNode = new Node(data);
 
+    if (pHead == nullptr)
+    {
+        pHead = pTail = newNode;
+    } else {
+        newNode->pNext = pHead;
+        pHead->pPrev = newNode;
+        pHead = newNode;
+    }
+
+    ++numElements;
 }
 
 template <typename T>
 void list <T> ::push_front(T && data)
 {
+    Node* newNode = new Node(std::move(data));
 
+    if (pHead == nullptr)
+    {
+        pHead = pTail = newNode;
+    } else {
+        newNode->pNext = pHead;
+        pHead->pPrev = newNode;
+        pHead = newNode;
+    }
+
+    ++numElements;
 }
 
 
@@ -411,7 +464,19 @@ void list <T> ::push_front(T && data)
 template <typename T>
 void list <T> ::pop_back()
 {
+    if (pTail == nullptr)
+    {
+        return;
+    }
 
+    Node* tempTail = pTail;
+    pTail = pTail->pPrev;
+    if (pTail != nullptr) {
+        pTail->pNext = nullptr;
+    }
+
+    delete tempTail;
+    --numElements;
 }
 
 /*********************************************
@@ -424,7 +489,22 @@ void list <T> ::pop_back()
 template <typename T>
 void list <T> ::pop_front()
 {
-
+    if (pHead == nullptr)
+    {
+        throw std::runtime_error("List is empty");
+    }
+    
+    Node* tempHead = pHead;
+    pHead = pHead->pNext;
+    
+    //redo? 
+    if (pHead == nullptr)
+    {
+        tempHead = pHead->pPrev;
+    }
+    
+    delete tempHead;
+    --this->numElements;
 }
 
 /*********************************************
