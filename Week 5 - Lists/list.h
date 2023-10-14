@@ -167,8 +167,8 @@ public:
    // constructors, destructors, and assignment operator
    iterator()
    {
-       Node * newNode = new list<T> :: Node();
-       p = newNode;
+       //Node * newNode = new list<T> :: Node();
+       p = nullptr;
    }
    iterator(Node * p)
    {
@@ -592,8 +592,8 @@ T & list <T> :: back()
 template <typename T>
 typename list <T> :: iterator  list <T> :: erase(const list <T> :: iterator & it)
 {
-    if (!it.p) {
-        return it;
+    if(it == end() || it.p == nullptr) {
+        return end();
     }
     
     list<T>::Node* target = it.p;
@@ -614,11 +614,11 @@ typename list <T> :: iterator  list <T> :: erase(const list <T> :: iterator & it
     }
     
     delete target;
-    --numElements;
+    numElements--;
     
-    if (nextNode) {
-        return list<T>::iterator(nextNode);
-    }
+
+    return list<T>::iterator(nextNode);
+    
     return list<T>::iterator(prevNode);
 }
 
@@ -635,34 +635,40 @@ typename list <T> :: iterator list <T> :: insert(list <T> :: iterator it,
                                                  const T & data)
 {
     list<T>::Node* newNode = new list<T>::Node(data);
-    if (empty()) {
-        pHead = pTail = newNode;
-        numElements = 1;
-        return begin();
+
+        if (empty()) {
+            // If the list is empty, set pHead and pTail to the new node
+            pHead = pTail = newNode;
+            numElements = 1;
+            return iterator(newNode);
+        }
+
+        if (!it.p) {
+            // Insert at the end
+            pTail->pNext = newNode;
+            newNode->pPrev = pTail;
+            pTail = newNode;
+            numElements++;
+            return iterator(newNode);
+        } else {
+            // Insert at a specific position
+            list<T>::Node* prevNode = it.p->pPrev;
+            newNode->pNext = it.p;
+            newNode->pPrev = prevNode;
+            
+            if (prevNode) {
+                prevNode->pNext = newNode;
+            } else {
+                // If inserting at the beginning, update pHead
+                pHead = newNode;
+            }
+
+            it.p->pPrev = newNode;
+            numElements++;
+            return iterator(newNode);
     }
-    if (!it.p) {
-        it.p->pPrev = newNode;
-        newNode->pNext = it.p;
-        return --end();
-    }
-    
-    if (it.p->pPrev != nullptr) {
-        it.p->pPrev->pNext = newNode;
-        newNode->pPrev = it.p->pPrev;
-    } else {
-        pHead = newNode;
-    }
-    
-    newNode->pNext = it.p
-    it.p->pPrev = newNode;
-    
-    if(it.p == pHead) {
-        
-    }
-    ++numElements;
     
     
-    return list<T>::iterator(newNode);
 }
 
 
@@ -670,27 +676,43 @@ template <typename T>
 typename list <T> :: iterator list <T> :: insert(list <T> :: iterator it,
    T && data)
 {
-    if (!it.p) {
-        push_back(std::move(data));
-        return --end();
-    }
     list<T>::Node* newNode = new list<T>::Node(std::forward<T>(data));
-    Node* current = it.p;
-    
-    if (current->pPrev) {
-        current->pPrev->pNext = newNode;
-        newNode->pPrev = current->pPrev;
-    } else {
-        pHead = newNode;
+
+        if (empty()) {
+            // If the list is empty, set pHead and pTail to the new node
+            pHead = pTail = newNode;
+            numElements = 1;
+            return iterator(newNode);
+        }
+
+        if (!it.p) {
+            // Insert at the end
+            pTail->pNext = newNode;
+            newNode->pPrev = pTail;
+            pTail = newNode;
+            numElements++;
+            return iterator(newNode);
+        } else {
+            // Insert at a specific position
+            list<T>::Node* prevNode = it.p->pPrev;
+            newNode->pNext = it.p;
+            newNode->pPrev = prevNode;
+            
+            if (prevNode) {
+                prevNode->pNext = newNode;
+            } else {
+                // If inserting at the beginning, update pHead
+                pHead = newNode;
+            }
+
+            it.p->pPrev = newNode;
+            numElements++;
+            return iterator(newNode);
     }
-    newNode->pNext = current;
-    current->pPrev = newNode;
-    
-    ++numElements;
     
     
-    return list<T>::iterator(newNode);
 }
+
 
 
 /**********************************************
