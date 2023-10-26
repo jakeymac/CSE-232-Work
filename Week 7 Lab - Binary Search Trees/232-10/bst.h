@@ -140,15 +140,18 @@ public:
    //
    BNode()
    {
-      pLeft = pRight = this;
+      data = 0;
+      pLeft = pRight = pParent = nullptr;
    }
    BNode(const T &  t) 
    {
-      pLeft = pRight = this; 
+       data = t;
+      pLeft = pRight = pParent = nullptr;
    }
    BNode(T && t) 
-   {  
-      pLeft = pRight = this;
+   {
+       data = std::move(t);
+      pLeft = pRight = pParent = nullptr;
    }
 
    //
@@ -164,8 +167,18 @@ public:
    // 
    // Status
    //
-   bool isRightChild(BNode * pNode) const { return true; }
-   bool isLeftChild( BNode * pNode) const { return true; }
+    bool isRightChild(BNode * pNode) const {
+        if (pParent) {
+            return pParent->pRight == this;
+        }
+        return false;
+    }
+    bool isLeftChild( BNode * pNode) const {
+        if (pParent) {
+            return pParent->pRight == this;
+        }
+        return false;
+    }
 
    //
    // Data
