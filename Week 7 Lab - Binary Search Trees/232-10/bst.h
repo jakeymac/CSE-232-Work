@@ -272,8 +272,8 @@ private:
 template <typename T>
 BST <T> ::BST()
 {
-   numElements = 99;
-   root = new BNode;
+   numElements = 0;
+    root = nullptr;
 }
 
 /*********************************************
@@ -294,8 +294,11 @@ BST <T> :: BST ( const BST<T>& rhs)
 template <typename T>
 BST <T> :: BST(BST <T> && rhs) 
 {
-   numElements = 99;
-   root = new BNode;
+    root = rhs.root;
+    numElements = rhs.numElements;
+    
+    rhs.root = nullptr;
+    rhs.numElements = 0;
 }
 
 /*********************************************
