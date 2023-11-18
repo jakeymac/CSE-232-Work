@@ -115,7 +115,7 @@ public:
    class iterator;
    iterator begin()
    {
-      return iterator();
+       return bst.begin();
    }
    iterator end()
    {
@@ -177,6 +177,8 @@ public:
    //
    void clear() noexcept
    {
+       bst.clear();
+       
    }
    size_t erase(const K& k);
    iterator erase(iterator it);
