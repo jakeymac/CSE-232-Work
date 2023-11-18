@@ -42,24 +42,32 @@ public:
    //
    // Construct
    //
-   set()
+    set()
    {
+        bst = BST<T>();
+       bst.root = nullptr;
+       bst.numElements = 0;
    }
-   set(const set &  rhs): bst(rhs.bst)
+   set(const set &  rhs)
    {
+       bst = rhs.bst;
    }
-   set(set && rhs) : bst(std::move(rhs.bst))
+   set(set && rhs)
    {
+       bst = std::move(rhs.bst);
    }
-   set(const std::initializer_list <T> & il) :bst(il)
+   set(const std::initializer_list <T> & il)
    {
+       clear();
+       for (auto element: il) {
+           insert(element);
+       }
    }
    template <class Iterator>
    set(Iterator first, Iterator last)
    {
-       while (first != last) {
-           insert(*first);
-           ++first;
+       for (Iterator it = first; it != last; ++it) {
+           insert(*it);
        }
    }
   ~set() { }
@@ -77,22 +85,24 @@ public:
    }
    set & operator = (set && rhs)
    {
-       if (this!= &rhs) {
+       if (this != &rhs) {
            bst = std::move(rhs.bst);
        }
        return *this;
    }
    set & operator = (const std::initializer_list <T> & il)
    {
-       bst.clear();
-       for (const auto &item : il) {
-           bst.insert(item);
-       }
+       clear();
+       for (const T & value : il) {
+               insert(value);
+           }
+       
        return *this;
+
    }
    void swap(set& rhs) noexcept
    {
-       std::swap(bst,rhs.bst);
+       std::swap(bst, rhs.bst);
    }
 
    //
@@ -102,11 +112,11 @@ public:
    class iterator;
    iterator begin() const noexcept
    {
-       return bst.begin();
+      return iterator(bst.begin());
    }
    iterator end() const noexcept
    {
-       return bst.end();
+      return iterator(bst.end());
    }
 
    //
@@ -149,8 +159,8 @@ public:
    template <class Iterator>
    void insert(Iterator first, Iterator last)
    {
-       for (auto it = first; it != last; ++it) {
-           bst.insert(*it);
+       for (Iterator it = first; it != last; ++it) {
+           insert(*it);
        }
    }
 
@@ -167,16 +177,19 @@ public:
        return iterator(bst.erase(it.it));
    }
    size_t erase(const T & t)
-    {
+   {
        auto it = bst.find(t);
        bst.erase(it);
        return bst.size();
    }
    iterator erase(iterator &itBegin, iterator &itEnd)
-   {
-       //TODO THIS NEEDS TO BE DONE
-      return iterator();
-   }
+    {
+       while (itBegin != itEnd) {
+           itBegin = erase(itBegin);
+       }
+       return itEnd;
+        }
+    
 
 private:
    
@@ -195,65 +208,75 @@ class set <T> :: iterator
    friend class custom::set<T>;
 
 public:
-    typename custom::BST<T>::iterator bstIterator;
    // constructors, destructors, and assignment operator
    iterator()
    {
    }
-    iterator(const typename custom::BST<T>::iterator& itRHS):bstIterator(itRHS)
+   iterator(const typename custom::BST<T>::iterator& itRHS) : it(itRHS)
    {
        
    }
-   iterator(const iterator & rhs) :bstIterator(rhs.bstIterator)
+   iterator(const iterator & rhs) :it(rhs.it)
    {
    }
    iterator & operator = (const iterator & rhs)
    {
-      return *this;
+       {
+                   if (this != &rhs) {
+                       it = rhs.it;
+                   }
+                   return *this;
+               }
    }
 
    // equals, not equals operator
    bool operator != (const iterator & rhs) const
    {
-      return true;
+       return it != rhs.it;
    }
    bool operator == (const iterator & rhs) const
    {
-      return true;
+       return it == rhs.it;
    }
 
    // dereference operator: by-reference so we can modify the Set
    const T & operator * () const
    {
-      return *(new T);
+       return *it;
    }
 
    // prefix increment
    iterator & operator ++ ()
    {
+       ++it;
       return *this;
    }
 
    // postfix increment
    iterator operator++ (int postfix)
    {
-      return *this;
+       iterator temp(*this);
+       ++(*this);
+       return temp;
    }
    
    // prefix decrement
    iterator & operator -- ()
    {
+       --it;
       return *this;
    }
    
    // postfix decrement
    iterator operator-- (int postfix)
    {
-      return *this;
+       iterator temp(*this);
+       --(*this);
+       return temp;
    }
    
 private:
-
+    
    typename custom::BST<T>::iterator it;
 };
 
