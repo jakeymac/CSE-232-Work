@@ -1659,6 +1659,7 @@ public:
       setupStandardFixture(s);
       int num(60);
       
+       
       // exercise
       auto pairSet = s.insert(num);
       // verify
