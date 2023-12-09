@@ -1,0 +1,382 @@
+/***********************************************************************
+ * Header:
+ *    HASH
+ * Summary:
+ *    Our custom implementation of std::unordered_Set
+ *        ____     _______        __
+ *      .' __ '.  |  _____|   _  / /
+ *      | (__) |  | |____    (_)/ /
+ *      .`____'.  '_.____''.   / / _
+ *     | (____) | | \____) |  / / (_)
+ *     `.______.'  \______.' /_/
+ *
+ *    This will contain the class definition of:
+ *        unordered_set           : A class that represents a hash
+ *        unordered_set::iterator : An interator through hash
+ * Author
+ *    <Jacob Johnson and Tyler Elms>
+ ************************************************************************/
+
+#pragma once
+
+#include <cmath>            // for std::abs
+#include <cassert>          // for assert()
+#include <initializer_list> // for std::initializer_list
+#include <utility>          // for std::move()
+#include <iostream>         // Include necessary headers
+
+#define HASH_EMPTY_VALUE -1
+
+class TestHash; // forward declaration for Hash unit tests
+
+namespace custom
+{
+    /************************************************
+     * UNORDERED SET
+     * A set implemented as a hash
+     ************************************************/
+    class unordered_set
+    {
+        friend class ::TestHash; // give unit tests access to the privates
+    public:
+        //
+        // Construct
+        //
+        unordered_set()
+        {
+            // Initialize buckets to empty values
+            for (int i = 0; i < 10; ++i)
+                buckets[i] = HASH_EMPTY_VALUE;
+            numElements = 0;
+        }
+
+        unordered_set(unordered_set& rhs)
+        {
+            // Implement as needed
+            // This could involve copying the content of 'rhs' to the current instance
+            std::copy(rhs.buckets, rhs.buckets + 10, buckets);
+            numElements = rhs.numElements;
+        }
+
+        unordered_set(unordered_set&& rhs) noexcept
+        {
+            // Implement as needed
+            // This could involve moving the content of 'rhs' to the current instance
+            std::move(rhs.buckets, rhs.buckets + 10, buckets);
+            numElements = rhs.numElements;
+
+            // Since it's a move operation, it's good practice to leave 'rhs' in a valid but unspecified state
+            rhs.numElements = 0;
+        }
+
+        template <class Iterator>
+        unordered_set(Iterator first, Iterator last)
+        {
+            // Implement as needed
+            // This could involve inserting elements from the range [first, last) into the set
+            for (auto it = first; it != last; ++it)
+            {
+                insert(*it);
+            }
+        }
+
+
+        //
+        // Assign
+        //
+        unordered_set& operator=(unordered_set& rhs);
+        unordered_set& operator=(unordered_set&& rhs) noexcept;
+        unordered_set& operator=(const std::initializer_list<int>& il);
+        void swap(unordered_set& rhs)
+        {
+            // Swap the buckets array
+            for (int i = 0; i < 10; ++i)
+            {
+                std::swap(this->buckets[i], rhs.buckets[i]);
+            }
+
+            // Swap the numElements
+            std::swap(this->numElements, rhs.numElements);
+        }
+
+        //
+        // Iterator
+        //
+        class iterator;
+        iterator begin();
+        iterator end();
+
+        // Access
+        size_t bucket(const int & t)
+        {
+            std::hash<int> hashFunction;
+            size_t hashCode = hashFunction(t);
+
+            // Map the hash code to a bucket index
+            return hashCode % 10;
+        }
+        iterator find(const int& t);
+
+        //
+        // Insert
+        //
+        iterator insert(const int& t);
+        void insert(const std::initializer_list<int> & il);
+
+        //
+        // Remove
+        //
+        void clear() noexcept
+        {
+            // Clear each bucket by setting it to the empty value
+            for (int i = 0; i < 10; ++i)
+                buckets[i] = HASH_EMPTY_VALUE;
+
+            // Reset the count of elements to zero
+            numElements = 0;
+        }
+
+        iterator erase(const int& t);
+
+        //
+        // Status
+        //
+        size_t size() const
+        {
+            return numElements;
+        }
+        bool empty() const
+        {
+            return numElements == 0;
+        }
+        size_t bucket_count() const
+        {
+            return 10; // Fixed bucket count
+        }
+        size_t bucket_size(size_t i) const
+        {
+            return (i < 10 && buckets[i] != HASH_EMPTY_VALUE) ? 1 : 0;
+        }
+
+    private:
+        int buckets[10]; // exactly 10 buckets of pointers. buckets[iBucket] == HASH_EMPTY_VALUE means it is not filled
+        int numElements; // number of elements in the Hash
+    };
+
+
+    /************************************************
+     * UNORDERED SET ITERATOR
+     * Iterator for an unordered set
+     ************************************************/
+    class unordered_set::iterator
+    {
+        friend class ::TestHash; // give unit tests access to the privates
+    public:
+        //
+        // Construct
+        iterator()
+            : pBucket(nullptr), pBucketEnd(nullptr)
+        {
+            // Implement as needed
+        }
+
+        // Parameterized constructor
+        iterator(int* pBucket, int* pBucketEnd)
+            : pBucket(pBucket), pBucketEnd(pBucketEnd)
+        {
+            // Implement as needed
+        }
+
+        // Copy constructor
+        iterator(const iterator& rhs)
+            : pBucket(rhs.pBucket), pBucketEnd(rhs.pBucketEnd)
+        {
+            // Implement as needed
+        }
+
+        //
+        // Assign
+        //
+        iterator& operator = (const iterator& rhs)
+        {
+            if (this != &rhs) // Check for self-assignment
+            {
+                pBucket = rhs.pBucket;
+                pBucketEnd = rhs.pBucketEnd;
+            }
+            return *this;
+        }
+
+        //
+        // Compare
+        //
+        bool operator != (const iterator& rhs) const
+        {
+            return pBucket != rhs.pBucket;
+        }
+        bool operator == (const iterator& rhs) const
+        {
+            return pBucket == rhs.pBucket;
+        }
+
+        //
+        // Access
+        //
+        int& operator * ()
+        {
+            return *pBucket;
+        }
+
+        //
+        // Arithmetic
+        //
+        iterator& operator ++ ()
+        {
+            ++pBucket;
+            return *this;
+        }
+
+        iterator operator ++ (int postfix)
+        {
+            iterator temp(*this);
+            ++(*this);
+            return temp;
+        }
+
+    private:
+        int* pBucket;
+        int* pBucketEnd;
+    };
+
+/*****************************************
+ * UNORDERED SET :: ASSIGN
+ ****************************************/
+inline unordered_set& unordered_set::operator=(unordered_set& rhs)
+{
+    if (this != &rhs) // Check for self-assignment
+    {
+        // Shallow copy the buckets and numElements
+        std::copy(rhs.buckets, rhs.buckets + 10, buckets);
+        numElements = rhs.numElements;
+    }
+    return *this;
+}
+
+inline unordered_set& unordered_set::operator=(unordered_set&& rhs) noexcept
+{
+    if (this != &rhs) // Check for self-assignment
+    {
+        // Move resources from rhs to this
+        std::swap(buckets, rhs.buckets);
+        std::swap(numElements, rhs.numElements);
+    }
+    return *this;
+}
+
+inline unordered_set& unordered_set::operator=(const std::initializer_list<int>& il)
+{
+    // Implement as needed
+    // This could involve clearing the existing set and inserting elements from the initializer list
+    // For simplicity, let's clear the set and insert elements from the initializer list
+    clear();
+    insert(il);
+    return *this;
+}
+
+
+    /*****************************************
+     * UNORDERED SET :: BEGIN / END
+     * Points to the first valid element in the has
+     ****************************************/
+    inline typename unordered_set::iterator  unordered_set::begin()
+    {
+        // find the first non-empty bucket
+        return iterator(buckets, buckets + 10);
+    }
+    inline typename unordered_set::iterator  unordered_set::end()
+    {
+        return iterator(buckets + 10, buckets + 10);
+    }
+
+    /*****************************************
+     * UNORDERED SET :: ERASE
+     * Remove one element from the unordered set
+     ****************************************/
+    inline typename unordered_set::iterator unordered_set::erase(const int& t)
+    {
+        // For simplicity, let's just mark the bucket as empty
+        for (int i = 0; i < 10; ++i)
+        {
+            if (buckets[i] == t)
+            {
+                buckets[i] = HASH_EMPTY_VALUE;
+                --numElements;
+                return iterator(&buckets[i], buckets + 10);
+            }
+        }
+        return end();
+    }
+
+    /*****************************************
+     * UNORDERED SET :: INSERT
+     * Insert one element into the hash
+     ****************************************/
+    inline custom::unordered_set::iterator unordered_set::insert(const int& t)
+    {
+        // For simplicity, let's insert elements at the beginning of the first non-empty bucket
+        for (int i = 0; i < 10; ++i)
+        {
+            if (buckets[i] == HASH_EMPTY_VALUE)
+            {
+                buckets[i] = t;
+                ++numElements;
+                return iterator(&buckets[i], buckets + 10);
+            }
+        }
+        return end();
+    }
+
+    inline void unordered_set::insert(const std::initializer_list<int> & il)
+    {
+        for (const auto& element : il)
+        {
+            insert(element);
+        }
+    }
+
+    /*****************************************
+     * UNORDERED SET :: FIND
+     * Find an element in an unordered set
+     ****************************************/
+    inline typename unordered_set::iterator unordered_set::find(const int& t)
+    {
+        for (int i = 0; i < 10; ++i)
+        {
+            if (buckets[i] == t)
+            {
+                return iterator(&buckets[i], buckets + 10);
+            }
+        }
+        return end();
+    }
+
+    /*****************************************
+     * UNORDERED SET :: ITERATOR :: INCREMENT
+     * Advance by one element in an unordered set
+     ****************************************/
+//    inline typename unordered_set::iterator & unordered_set::iterator::operator ++ ()
+//    {
+//        // Implement as needed
+//        ++pBucket;
+//        return *this;
+//    }
+
+    /*****************************************
+     * SWAP
+     * Stand-alone unordered set swap
+     ****************************************/
+    inline void swap(unordered_set& lhs, unordered_set& rhs)
+    {
+        lhs.swap(rhs);
+    }
+}
